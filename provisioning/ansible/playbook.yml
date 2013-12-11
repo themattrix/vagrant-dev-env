@@ -3,30 +3,51 @@
 - name: Bootstrapping developer environment
   hosts: localhost
   remote_user: vagrant
+  vars:
+    github_known_hosts_line: "github.com,ssh.github.com,192.30.252.151,192.30.252.148 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=="
 
   tasks:
 
-  - name: Installing helpful packages
+  - name: Install kernel extras
     sudo: yes
     apt: >
-      pkg={{ item }} 
+      pkg="linux-image-extra-{{ ansible_kernel }}"
+      state=present
+      update_cache=yes 
+      cache_valid_time=3600
+
+  - name: Install aufs kernel module
+    sudo: yes
+    modprobe: name=aufs state=present
+
+  - name: Install helpful packages
+    sudo: yes
+    apt: >
+      pkg={{ item }}
       state=present 
       update_cache=yes 
       cache_valid_time=3600
     with_items:
-    - vim
     - git
     - tmux
     - htop
     - socat
+    - vim
+    - vim-scripts
+    - vim-puppet
 
-  - name: Create data dir
+  - name: Create directories
     sudo: yes
     file: >
-      path=/data 
+      path={{ item.dir }}
       state=directory 
-      owner=vagrant 
-      group=vagrant
+      owner={{ item.o }}
+      group={{ item.g }}
+    with_items:
+    - { "o": "vagrant", "g": "vagrant", "dir": "/data" }
+    - { "o": "vagrant", "g": "vagrant", "dir": "/data/sysroot" }
+    - { "o": "vagrant", "g": "vagrant", "dir": "/data/sysroot/home" }
+    - { "o": "vagrant", "g": "vagrant", "dir": "/data/sysroot/home/vagrant" }
 
   - name: Install SSH files
     copy: >
@@ -46,9 +67,33 @@
       regexp="^{{ item.host }}"
       line="{{ item.line }}"
     with_items:
-    - { "host": "github.com", "line": "github.com,ssh.github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==" }
+    - { "host": "github.com", "line": "{{ github_known_hosts_line }}" }
 
   - name: Clone home repo
     git: >
       repo=ssh://github.com/themattrix/home.git
       dest=/data/home
+      update=no
+
+  - name: Create overlayed home directory
+    sudo: yes
+    mount: >
+      name=/home/vagrant
+      src=none
+      fstype=aufs
+      state=mounted
+      opts="br=/data/sysroot/home/vagrant:/data/home:/home/vagrant"
+
+  - name: Grab the current git configuration for {{ ansible_ssh_user }}
+    shell: git config --list
+    register: git_config
+
+  - name: Set global git config options for {{ ansible_ssh_user }}
+    shell: git config --global {{ item.opt }} "{{ item.value }}"
+    when: not '{{ item.opt }}={{ item.value }}' in git_config.stdout_lines 
+    with_items:
+    - { "opt": "user.name",   "value": "Matthew Tardiff" }
+    - { "opt": "user.email",  "value": "mattrix@gmail.com" }
+    - { "opt": "core.editor", "value": "vim" }
+    - { "opt": "merge.tool",  "value": "vimdiff" }
+    - { "opt": "color.ui",    "value": "true" }
