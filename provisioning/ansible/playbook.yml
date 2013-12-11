@@ -97,3 +97,24 @@
     - { "opt": "core.editor", "value": "vim" }
     - { "opt": "merge.tool",  "value": "vimdiff" }
     - { "opt": "color.ui",    "value": "true" }
+
+  - name: Install pathogen
+    git: >
+      repo=https://github.com/tpope/vim-pathogen.git
+      dest=/home/{{ ansible_ssh_user }}/.vim
+      update=no
+
+  - name: Install vim plugins
+    git: >
+      repo={{ item.repo }}
+      dest=/home/{{ ansible_ssh_user }}/.vim/bundle/{{ item.name }}
+      update=no
+    with_items:
+    - { "name": "vim-colorschemes", "repo": "https://github.com/flazz/vim-colorschemes.git" }
+    - { "name": "vim-colorscheme-switcher", "repo": "https://github.com/vim-scripts/vim-colorscheme-switcher.git" }
+    - { "name": "vim-misc", "repo": "https://github.com/xolox/vim-misc.git" }
+    - { "name": "supertab", "repo": "https://github.com/ervandew/supertab.git" }
+    - { "name": "vim-colors-solarized-brown", "repo": "https://github.com/ajacksified/vim-colors-solarized-brown.git" }
+    - { "name": "vim-easy-align", "repo": "https://github.com/junegunn/vim-easy-align.git" }
+    - { "name": "vim-surround", "repo": "https://github.com/tpope/vim-surround.git" }
+    - { "name": "vim-tmux-navigator", "repo": "https://github.com/christoomey/vim-tmux-navigator.git" }
