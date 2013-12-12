@@ -44,10 +44,10 @@
       owner={{ item.o }}
       group={{ item.g }}
     with_items:
-    - { "o": "vagrant", "g": "vagrant", "dir": "/data" }
-    - { "o": "vagrant", "g": "vagrant", "dir": "/data/sysroot" }
-    - { "o": "vagrant", "g": "vagrant", "dir": "/data/sysroot/home" }
-    - { "o": "vagrant", "g": "vagrant", "dir": "/data/sysroot/home/vagrant" }
+    - { o: "vagrant", g: "vagrant", dir: "/data" }
+    - { o: "vagrant", g: "vagrant", dir: "/data/sysroot" }
+    - { o: "vagrant", g: "vagrant", dir: "/data/sysroot/home" }
+    - { o: "vagrant", g: "vagrant", dir: "/data/sysroot/home/vagrant" }
 
   - name: Install SSH files
     copy: >
@@ -57,9 +57,9 @@
       owner={{ ansible_ssh_user }}
       group={{ ansible_ssh_user }}
     with_items:
-    - { "file": "config",     "mode": "0600" }
-    - { "file": "github.pub", "mode": "0600" }
-    - { "file": "github",     "mode": "0400" }
+    - { file: "config",     mode: "0600" }
+    - { file: "github.pub", mode: "0600" }
+    - { file: "github",     mode: "0400" }
 
   - name: Add github.com to known_hosts file
     lineinfile: >
@@ -67,7 +67,8 @@
       regexp="^{{ item.host }}"
       line="{{ item.line }}"
     with_items:
-    - { "host": "github.com", "line": "{{ github_known_hosts_line }}" }
+    - host: github.com
+      line: "{{ github_known_hosts_line }}"
 
   - name: Clone home repo
     git: >
@@ -82,21 +83,26 @@
       src=none
       fstype=aufs
       state=mounted
-      opts="br=/data/sysroot/home/vagrant:/data/home:/home/vagrant"
+      opts="br=/data/sysroot/home/vagrant=rw:/data/home=rw:/home/vagrant"
 
-  - name: Grab the current git configuration for {{ ansible_ssh_user }}
+  - name: Grab the current git configuration
     shell: git config --list
     register: git_config
 
-  - name: Set global git config options for {{ ansible_ssh_user }}
+  - name: Set global git config options
     shell: git config --global {{ item.opt }} "{{ item.value }}"
     when: not '{{ item.opt }}={{ item.value }}' in git_config.stdout_lines 
     with_items:
-    - { "opt": "user.name",   "value": "Matthew Tardiff" }
-    - { "opt": "user.email",  "value": "mattrix@gmail.com" }
-    - { "opt": "core.editor", "value": "vim" }
-    - { "opt": "merge.tool",  "value": "vimdiff" }
-    - { "opt": "color.ui",    "value": "true" }
+    - opt: user.name
+      value: Matthew Tardiff
+    - opt: user.email
+      value: mattrix@gmail.com
+    - opt: core.editor
+      value: vim
+    - opt: merge.tool
+      value: vimdiff
+    - opt: color.ui
+      value: true
 
   - name: Install pathogen
     git: >
@@ -110,11 +116,31 @@
       dest=/home/{{ ansible_ssh_user }}/.vim/bundle/{{ item.name }}
       update=no
     with_items:
-    - { "name": "vim-colorschemes", "repo": "https://github.com/flazz/vim-colorschemes.git" }
-    - { "name": "vim-colorscheme-switcher", "repo": "https://github.com/vim-scripts/vim-colorscheme-switcher.git" }
-    - { "name": "vim-misc", "repo": "https://github.com/xolox/vim-misc.git" }
-    - { "name": "supertab", "repo": "https://github.com/ervandew/supertab.git" }
-    - { "name": "vim-colors-solarized-brown", "repo": "https://github.com/ajacksified/vim-colors-solarized-brown.git" }
-    - { "name": "vim-easy-align", "repo": "https://github.com/junegunn/vim-easy-align.git" }
-    - { "name": "vim-surround", "repo": "https://github.com/tpope/vim-surround.git" }
-    - { "name": "vim-tmux-navigator", "repo": "https://github.com/christoomey/vim-tmux-navigator.git" }
+    - name: vim-colorschemes
+      repo: https://github.com/flazz/vim-colorschemes.git
+    - name: vim-colorscheme-switcher
+      repo: https://github.com/vim-scripts/vim-colorscheme-switcher.git
+    - name: vim-misc
+      repo: https://github.com/xolox/vim-misc.git
+    - name: supertab
+      repo: https://github.com/ervandew/supertab.git
+    - name: vim-colors-solarized-brown
+      repo: https://github.com/ajacksified/vim-colors-solarized-brown.git
+    - name: vim-easy-align
+      repo: https://github.com/junegunn/vim-easy-align.git
+    - name: vim-surround
+      repo: https://github.com/tpope/vim-surround.git
+    - name: vim-tmux-navigator
+      repo: https://github.com/christoomey/vim-tmux-navigator.git
+
+  - name: Clone dircolors-solarized
+    git: repo={{ item.repo }} dest=/data/{{ item.name }} update=no
+    with_items:
+    - name: dircolors-solarized
+      repo: https://github.com/seebi/dircolors-solarized.git
+
+  - name: Link dircolors-solarized dark
+    file: >
+      path="/home/{{ ansible_ssh_user }}/.dircolors"
+      src="/data/dircolors-solarized/dircolors.256dark"
+      state=link
