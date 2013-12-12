@@ -132,6 +132,8 @@
       repo: https://github.com/tpope/vim-surround.git
     - name: vim-tmux-navigator
       repo: https://github.com/christoomey/vim-tmux-navigator.git
+    - name: vim-yaml
+      repo: https://github.com/stephpy/vim-yaml.git
 
   - name: Clone dircolors-solarized
     git: repo={{ item.repo }} dest=/data/{{ item.name }} update=no
