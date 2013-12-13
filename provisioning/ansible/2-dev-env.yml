@@ -66,6 +66,7 @@
       dest=/home/{{ ansible_ssh_user }}/.ssh/known_hosts
       regexp="^{{ item.host }}"
       line="{{ item.line }}"
+      create=yes
     with_items:
     - host: github.com
       line: "{{ github_known_hosts_line }}"

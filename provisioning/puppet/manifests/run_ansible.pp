@@ -1,57 +1,17 @@
-# Vagrant user should be able to SSH to localhost without a problem
-
-$vagrant_ssh_dir = '/home/vagrant/.ssh'
-
-file { "$vagrant_ssh_dir":
-  ensure => directory,
-  owner  => 'vagrant',
-  group  => 'vagrant',
-  mode   => '0644',
-} ->
-
-exec { 'generate-local-ssh-key':
-  path    => ['/bin', '/usr/bin'],
-  cwd     => "$vagrant_ssh_dir",
-  user    => 'vagrant',
-  command => 'ssh-keygen -t rsa -b 4096 -N "" -f id_rsa',
-  creates => "$vagrant_ssh_dir/id_rsa",
-} ->
-
-exec { 'authorize-ssh-key':
-  path    => ['/bin', '/usr/bin'],
-  cwd     => "$vagrant_ssh_dir",
-  user    => 'vagrant',
-  command => "cat id_rsa.pub >> authorized_keys",
-  unless  => 'grep -sqFx "$(cat id_rsa.pub)" authorized_keys',
-} ->
-
-file { "$vagrant_ssh_dir/authorized_keys":
-  owner => 'vagrant',
-  group => 'vagrant',
-  mode  => '0400',
-} ->
-
-exec { 'add-localhost-to-known-hosts':
-  path    => ['/bin', '/usr/bin'],
-  cwd     => "$vagrant_ssh_dir",
-  user    => 'vagrant',
-  command => 'ssh-keyscan -t rsa localhost >> known_hosts',
-  unless  => 'grep -sq "^localhost " known_hosts',
-}
-
-
 # Ensure apt database has been updated before any packages are installed
 Exec['apt-get-update'] -> Package<| |>
 
+Exec {
+  path => ['/usr/local/sbin', '/usr/sbin', '/sbin', '/usr/local/bin', '/usr/bin', '/bin'],
+}
+
 exec { 'add-ansible-repo':
-  path      => ['/bin', '/usr/bin'],
   command   => 'add-apt-repository -y ppa:rquillo/ansible',
   creates   => '/etc/apt/trusted.gpg.d/rquillo-ansible.gpg',
   logoutput => true,
 }
 
 exec { 'apt-get-update':
-  path    => ['/bin', '/usr/bin'],
   command => 'apt-get update',
   require => Exec['add-ansible-repo'],
   onlyif  => '[ $(($(date +%s) - $(date +%s -d "$(stat -c %y /var/lib/apt/periodic/update-success-stamp)"))) -gt 3600 ]',
@@ -66,14 +26,20 @@ file { '/etc/ansible/hosts':
   require => Package['ansible'],
 }
 
-exec { 'run-ansible':
-  path      => ['/bin', '/usr/bin', '/sbin', '/usr/sbin', '/usr/local/sbin'],
-  user      => 'vagrant',
-  command   => 'ansible-playbook /vagrant/provisioning/ansible/playbook.yml',
-  logoutput => true,
-  timeout   => 0,
-  require   => [
+exec { 'bootstrap-ansible':
+  user        => 'vagrant',
+  environment => ['HOME=/home/vagrant', 'USER=vagrant'],
+  command     => 'ansible-playbook /vagrant/provisioning/ansible/1-enable-local-ssh.yml --connection=local',
+  logoutput   => true,
+  timeout     => 0,
+  require     => [
     File['/etc/ansible/hosts'],
-    Exec['add-localhost-to-known-hosts'],
   ]
+} ->
+
+exec { 'run-ansible':
+  user        => 'vagrant',
+  command     => 'ansible-playbook /vagrant/provisioning/ansible/2-dev-env.yml',
+  logoutput   => true,
+  timeout     => 0,
 }

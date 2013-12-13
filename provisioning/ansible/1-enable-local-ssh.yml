@@ -1,0 +1,36 @@
+---
+
+- name: Enable local SSH
+  hosts: localhost
+  connection: local
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+    ssh_dir: "/home/{{ user }}/.ssh"
+    prv_key: "{{ ssh_dir }}/id_rsa"
+    pub_key: "{{ prv_key }}.pub"
+    known_hosts: "{{ ssh_dir }}/known_hosts"
+
+  tasks:
+
+  - name: Create vagrant .ssh directory
+    file: path="{{ ssh_dir }}" state=directory mode=0755
+
+  - name: Generate local SSH key
+    shell: >
+      creates="{{ prv_key }}"
+      ssh-keygen -t rsa -b 4096 -N "" -f "{{ prv_key }}"
+
+  - name: Authorize local SSH key
+    authorized_key: >
+      user="{{ user }}"
+      key="{{ lookup('file', pub_key) }}"
+
+  - name: Add localhost to known_hosts file
+    lineinfile: >
+      dest="{{ known_hosts }}"
+      regexp="^{{ item.host }}"
+      line="{{ item.line }}"
+      create=yes
+    with_items:
+    - host: localhost
+      line: "{{ lookup('pipe', 'ssh-keyscan -t rsa localhost') }}"
