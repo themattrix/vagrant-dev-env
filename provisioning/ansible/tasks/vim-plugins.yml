@@ -32,7 +32,7 @@
     repo: https://github.com/Lokaltog/vim-easymotion.git
   - name: gundo
     repo: https://github.com/sjl/gundo.vim.git
-  - name: ack
+  - name: ack # requires the 'ack-grep' package
     repo: https://github.com/mileszs/ack.vim.git 
   - name: detectindent
     repo: https://github.com/ciaranm/detectindent.git
@@ -60,5 +60,5 @@
     repo: https://github.com/rodjek/vim-puppet.git
 
   # C/C++ tools
-  - name: clang_complete
+  - name: clang_complete # requires clang
     repo: https://github.com/Rip-Rip/clang_complete.git
