@@ -12,27 +12,55 @@
     dest=/home/{{ ansible_ssh_user }}/.vim/bundle/{{ item.name }}
     update=no
   with_items:
-  - name: vim-colorschemes
-    repo: https://github.com/flazz/vim-colorschemes.git
-  - name: vim-colorscheme-switcher
-    repo: https://github.com/vim-scripts/vim-colorscheme-switcher.git
+
+  # General-purpose tools
   - name: vim-misc
     repo: https://github.com/xolox/vim-misc.git
   - name: supertab
     repo: https://github.com/ervandew/supertab.git
-  - name: vim-colors-solarized-brown
-    repo: https://github.com/ajacksified/vim-colors-solarized-brown.git
   - name: vim-easy-align
     repo: https://github.com/junegunn/vim-easy-align.git
   - name: vim-surround
     repo: https://github.com/tpope/vim-surround.git
+  - name: vim-sensible
+    repo: https://github.com/tpope/vim-sensible.git
   - name: vim-tmux-navigator
     repo: https://github.com/christoomey/vim-tmux-navigator.git
-  - name: vim-yaml
-    repo: https://github.com/stephpy/vim-yaml.git
   - name: ctrlp
     repo: https://github.com/kien/ctrlp.vim.git
   - name: vim-easymotion
     repo: https://github.com/Lokaltog/vim-easymotion.git
+  - name: gundo
+    repo: https://github.com/sjl/gundo.vim.git
+  - name: ack
+    repo: https://github.com/mileszs/ack.vim.git 
+  - name: detectindent
+    repo: https://github.com/ciaranm/detectindent.git
+  - name: tcomment_vim
+    repo: https://github.com/tomtom/tcomment_vim.git
+
+  # Colors
+  - name: vim-colorschemes
+    repo: https://github.com/flazz/vim-colorschemes.git
+  - name: vim-colorscheme-switcher
+    repo: https://github.com/vim-scripts/vim-colorscheme-switcher.git
+  - name: molokai
+    repo: https://github.com/tomasr/molokai.git
+  - name: vim-colors-solarized-brown
+    repo: https://github.com/ajacksified/vim-colors-solarized-brown.git
+
+  # Git tools
   - name: vim-fugitive
     repo: https://github.com/tpope/vim-fugitive.git
+
+  # Yaml tools
+  - name: vim-yaml
+    repo: https://github.com/stephpy/vim-yaml.git
+
+  # Puppet tools
+  - name: vim-puppet
+    repo: https://github.com/rodjek/vim-puppet.git
+
+  # C/C++ tools
+  - name: clang_complete
+    repo: https://github.com/Rip-Rip/clang_complete.git

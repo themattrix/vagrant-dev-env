@@ -14,4 +14,9 @@
   - socat
   - vim
   - vim-scripts
-  - vim-puppet
+  - ack-grep
+  - clang-3.4
+  - clang-3.4-doc
+  - libclang1-3.4
+  - clang-format-3.4
+  - cpp11-migrate-3.4
