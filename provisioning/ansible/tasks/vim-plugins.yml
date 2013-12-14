@@ -46,8 +46,6 @@
     repo: https://github.com/vim-scripts/vim-colorscheme-switcher.git
   - name: molokai
     repo: https://github.com/tomasr/molokai.git
-  - name: vim-colors-solarized-brown
-    repo: https://github.com/ajacksified/vim-colors-solarized-brown.git
 
   # Git tools
   - name: vim-fugitive
