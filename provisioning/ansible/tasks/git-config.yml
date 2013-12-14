@@ -1,0 +1,13 @@
+---
+
+- name: Set global git config options
+  shell: git config --global {{ item.opt }} "{{ item.value }}"
+  when: not {{ item.opt + "=" + item.value in lookup('pipe', 'git config --list') }}
+  with_items:
+  - { opt: "user.name",    value: "Matthew Tardiff" }
+  - { opt: "user.email",   value: "mattrix@gmail.com" }
+  - { opt: "core.editor",  value: "vim" }
+  - { opt: "merge.tool",   value: "vimdiff" }
+  - { opt: "color.ui",     value: "true" }
+  - { opt: "push.default", value: "simple" }
+  - { opt: "alias.hist",   value: "log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short" }

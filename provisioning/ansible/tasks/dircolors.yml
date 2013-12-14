@@ -1,0 +1,13 @@
+---
+
+- name: Clone dircolors-solarized
+  git: repo={{ item.repo }} dest=/data/{{ item.name }} update=no
+  with_items:
+  - name: dircolors-solarized
+    repo: https://github.com/seebi/dircolors-solarized.git
+
+- name: Link dircolors-solarized dark
+  file: >
+    path="/home/{{ ansible_ssh_user }}/.dircolors"
+    src="/data/dircolors-solarized/dircolors.256dark"
+    state=link

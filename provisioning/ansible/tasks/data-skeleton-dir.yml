@@ -1,0 +1,14 @@
+---
+
+- name: Create directories
+  sudo: yes
+  file: >
+    path={{ item.dir }}
+    state=directory 
+    owner={{ item.o }}
+    group={{ item.g }}
+  with_items:
+  - { o: "vagrant", g: "vagrant", dir: "/data" }
+  - { o: "vagrant", g: "vagrant", dir: "/data/sysroot" }
+  - { o: "vagrant", g: "vagrant", dir: "/data/sysroot/home" }
+  - { o: "vagrant", g: "vagrant", dir: "/data/sysroot/home/vagrant" }
