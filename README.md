@@ -1,8 +1,6 @@
-My (Continuously Evolving) Linux Development Environment
-========================================================
+### My (Continuously Evolving) Linux Development Environment
 
-Status
-------
-
-- Ubuntu: **Operational**
-- CentOS: *Not yet ready for use.*
+> Status
+>
+> - Ubuntu: **Operational**
+> - CentOS: *Not yet ready for use.*
