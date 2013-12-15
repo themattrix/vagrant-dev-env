@@ -3,8 +3,6 @@
 - name: Bootstrapping developer environment
   hosts: localhost
   remote_user: vagrant
-  vars:
-    home_repo: "ssh://github.com/themattrix/home.git"
   
   tasks:
 

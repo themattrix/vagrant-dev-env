@@ -12,7 +12,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         # Initially with Puppet for the sole purpose of installing and running Ansible on the VM.
         ubuntu.vm.provision "puppet" do |puppet|
-            puppet.module_path    = "provisioning/puppet/modules"
             puppet.manifests_path = "provisioning/puppet/manifests"
             puppet.manifest_file  = "run_ansible.pp"
         end

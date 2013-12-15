@@ -4,8 +4,8 @@
   shell: git config --global {{ item.opt }} "{{ item.value }}"
   when: not {{ item.opt + "=" + item.value in lookup('pipe', 'git config --list') }}
   with_items:
-  - { opt: "user.name",    value: "Matthew Tardiff" }
-  - { opt: "user.email",   value: "mattrix@gmail.com" }
+  - { opt: "user.name",    value: "{{ git_config_user_name }}" }
+  - { opt: "user.email",   value: "{{ git_config_email }}" }
   - { opt: "core.editor",  value: "vim" }
   - { opt: "merge.tool",   value: "vimdiff" }
   - { opt: "color.ui",     value: "true" }

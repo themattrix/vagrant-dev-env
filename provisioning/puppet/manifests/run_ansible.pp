@@ -22,7 +22,8 @@ package { 'ansible':
 }
 
 file { '/etc/ansible/hosts':
-  content => 'localhost',
+  source  => '/vagrant/provisioning/ansible/config/hosts',
+  links   => follow,
   require => Package['ansible'],
 }
 

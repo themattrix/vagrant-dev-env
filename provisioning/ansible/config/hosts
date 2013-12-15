@@ -1,0 +1,7 @@
+[local]
+localhost
+
+[local:vars]
+home_repo=git@github.com:themattrix/home.git
+git_config_user_name=Matthew Tardiff
+git_config_email=mattrix@gmail.com
