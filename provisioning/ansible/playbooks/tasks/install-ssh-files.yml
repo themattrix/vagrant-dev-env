@@ -1,0 +1,19 @@
+---
+
+- name: Install SSH config
+  copy: >
+    src=/vagrant/.data/ssh/config
+    dest=/home/{{ ansible_ssh_user }}/.ssh/config
+    mode=0600
+    owner={{ ansible_ssh_user }}
+    group={{ ansible_ssh_user }}
+
+- name: Install SSH keys
+  copy: >
+    src={{ item }}
+    dest=/home/{{ ansible_ssh_user }}/.ssh/{{ item | basename }}
+    mode=0400
+    owner={{ ansible_ssh_user }}
+    group={{ ansible_ssh_user }}
+  with_fileglob:
+  - /vagrant/.data/ssh/keys/*
