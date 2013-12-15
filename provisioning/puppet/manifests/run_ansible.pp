@@ -29,17 +29,10 @@ file { '/etc/ansible/hosts':
 exec { 'bootstrap-ansible':
   user        => 'vagrant',
   environment => ['HOME=/home/vagrant', 'USER=vagrant'],
-  command     => 'ansible-playbook /vagrant/provisioning/ansible/1-enable-local-ssh.yml --connection=local',
+  command     => 'ansible-playbook /vagrant/provisioning/ansible/playbook.yml',
   logoutput   => true,
   timeout     => 0,
   require     => [
     File['/etc/ansible/hosts'],
   ]
-} ->
-
-exec { 'run-ansible':
-  user        => 'vagrant',
-  command     => 'ansible-playbook /vagrant/provisioning/ansible/2-dev-env.yml',
-  logoutput   => true,
-  timeout     => 0,
 }

@@ -1,14 +1,12 @@
 ---
 
-- name: Bootstrapping developer environment
+- name: Bootstrap developer environment
   hosts: localhost
   remote_user: vagrant
   tasks:
   - include: tasks/kernel-modules.yml
   - include: tasks/developer-tools.yml
   - include: tasks/data-skeleton-dir.yml
-  - include: tasks/clone-home.yml
-  - include: tasks/stack-home-dir.yml
   - include: tasks/git-config.yml
   - include: tasks/vim-plugins.yml
   - include: tasks/dircolors.yml

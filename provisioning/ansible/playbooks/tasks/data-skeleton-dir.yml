@@ -1,0 +1,11 @@
+---
+
+- name: Create data directory
+  sudo: yes
+  file: >
+    path={{ item.dir }}
+    state=directory 
+    owner={{ item.o }}
+    group={{ item.g }}
+  with_items:
+  - { o: "vagrant", g: "vagrant", dir: "/data" }
