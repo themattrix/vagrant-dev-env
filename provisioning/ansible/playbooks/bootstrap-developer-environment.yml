@@ -5,6 +5,7 @@
   remote_user: vagrant
   tasks:
   - include: tasks/kernel-modules.yml
+  - include: tasks/install-docker.yml
   - include: tasks/developer-tools.yml
   - include: tasks/data-skeleton-dir.yml
   - include: tasks/git-config.yml

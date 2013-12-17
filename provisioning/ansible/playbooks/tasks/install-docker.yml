@@ -1,0 +1,13 @@
+---
+
+- name: Install Docker key
+  sudo: yes
+  apt_key: id=A88D21E9 url=https://get.docker.io/gpg
+
+- name: Add Docker source to apt
+  sudo: yes
+  apt_repository: repo='deb http://get.docker.io/ubuntu docker main'
+
+- name: Install Docker
+  sudo: yes
+  apt: pkg=lxc-docker update_cache=yes cache_valid_time=3600
