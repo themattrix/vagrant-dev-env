@@ -2,63 +2,44 @@
 
 - name: Install pathogen
   git: >
-    repo=https://github.com/tpope/vim-pathogen.git
-    dest=/home/{{ ansible_ssh_user }}/.vim
+    repo="https://github.com/tpope/vim-pathogen.git"
+    dest="/home/{{ ansible_ssh_user }}/.vim"
     update=no
 
 - name: Install vim plugins
   git: >
-    repo={{ item.repo }}
-    dest=/home/{{ ansible_ssh_user }}/.vim/bundle/{{ item.name }}
+    repo="{{ item }}.git"
+    dest="/home/{{ ansible_ssh_user }}/.vim/bundle/{{ item | basename }}"
     update=no
   with_items:
 
   # General-purpose tools
-  - name: vim-misc
-    repo: https://github.com/xolox/vim-misc.git
-  - name: supertab
-    repo: https://github.com/ervandew/supertab.git
-  - name: vim-easy-align
-    repo: https://github.com/junegunn/vim-easy-align.git
-  - name: vim-surround
-    repo: https://github.com/tpope/vim-surround.git
-  - name: vim-sensible
-    repo: https://github.com/tpope/vim-sensible.git
-  - name: vim-tmux-navigator
-    repo: https://github.com/christoomey/vim-tmux-navigator.git
-  - name: ctrlp
-    repo: https://github.com/kien/ctrlp.vim.git
-  - name: vim-easymotion
-    repo: https://github.com/Lokaltog/vim-easymotion.git
-  - name: gundo
-    repo: https://github.com/sjl/gundo.vim.git
-  - name: ack # requires the 'ack-grep' package
-    repo: https://github.com/mileszs/ack.vim.git 
-  - name: detectindent
-    repo: https://github.com/ciaranm/detectindent.git
-  - name: tcomment_vim
-    repo: https://github.com/tomtom/tcomment_vim.git
+  - https://github.com/xolox/vim-misc
+  - https://github.com/ervandew/supertab
+  - https://github.com/junegunn/vim-easy-align
+  - https://github.com/tpope/vim-surround
+  - https://github.com/tpope/vim-sensible
+  - https://github.com/christoomey/vim-tmux-navigator
+  - https://github.com/kien/ctrlp.vim
+  - https://github.com/Lokaltog/vim-easymotion
+  - https://github.com/sjl/gundo.vim
+  - https://github.com/mileszs/ack.vim    # requires the 'ack-grep' package
+  - https://github.com/ciaranm/detectindent
+  - https://github.com/tomtom/tcomment_vim
 
   # Colors
-  - name: vim-colorschemes
-    repo: https://github.com/flazz/vim-colorschemes.git
-  - name: vim-colorscheme-switcher
-    repo: https://github.com/vim-scripts/vim-colorscheme-switcher.git
-  - name: molokai
-    repo: https://github.com/tomasr/molokai.git
+  - https://github.com/flazz/vim-colorschemes
+  - https://github.com/vim-scripts/vim-colorscheme-switcher
+  - https://github.com/tomasr/molokai
 
   # Git tools
-  - name: vim-fugitive
-    repo: https://github.com/tpope/vim-fugitive.git
+  - https://github.com/tpope/vim-fugitive
 
   # Yaml tools
-  - name: vim-yaml
-    repo: https://github.com/stephpy/vim-yaml.git
+  - https://github.com/stephpy/vim-yaml
 
   # Puppet tools
-  - name: vim-puppet
-    repo: https://github.com/rodjek/vim-puppet.git
+  - https://github.com/rodjek/vim-puppet
 
   # C/C++ tools
-  - name: clang_complete # requires clang
-    repo: https://github.com/Rip-Rip/clang_complete.git
+  - https://github.com/Rip-Rip/clang_complete
