@@ -16,3 +16,4 @@
   - libclang1-3.4
   - clang-format-3.4
   - cpp11-migrate-3.4
+  - libnotify-bin
