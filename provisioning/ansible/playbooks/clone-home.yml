@@ -3,23 +3,97 @@
 - name: Bootstrapping developer environment
   hosts: localhost
   remote_user: vagrant
+  tasks:
+  - include: tasks/install-ssh-files.yml
+  - include: tasks/add-github-to-known-hosts.yml
+  - group_by: key={{ ansible_distribution }}
+
+
+- hosts: CentOS
+  remote_user: vagrant
+  gather_facts: no
+  vars:
+    git_version: "1.8.5.2"
+    git_package: "v{{ git_version }}.tar.gz"
+    git_src_url: "https://github.com/git/git/archive/{{ git_package }}"
+    git_src_dir: "git-{{ git_version }}"
+
+  tasks:
+
+  - name: See if git is installed
+    shell: which git
+    register: git_installed
+    ignore_errors: yes
+
+  - name: Install build tools
+    sudo: yes
+    yum: name={{ item }}
+    with_items:
+    - perl-ExtUtils-MakeMaker.x86_64
+    - gettext-devel
+    - expat-devel
+    - curl-devel
+    - zlib-devel
+    - openssl-devel
+    - openssl-devel
+    - gcc-c++
+    - make
+    - asciidoc
+    - xmlto.x86_64
+    when: git_installed|failed
+
+  - name: Create temporary directory for git build
+    shell: mktemp -d
+    register: git_temp_dir
+    when: git_installed|failed
+
+  - name: Download git source
+    get_url: url={{ git_src_url }} dest={{ git_temp_dir.stdout }}/{{ git_package }}
+    when: git_installed|failed
+
+  - name: Extract git source
+    shell: >
+      chdir={{ git_temp_dir.stdout }}
+      tar xzf {{ git_package }}
+    when: git_installed|failed
+
+  - name: Make git
+    shell: >
+      chdir={{ git_temp_dir.stdout }}/{{ git_src_dir }}
+      make configure
+      && ./configure --prefix=/usr
+      && make all doc
+    when: git_installed|failed
+
+  - name: Install git
+    sudo: yes
+    shell: >
+      chdir={{ git_temp_dir.stdout }}/{{ git_src_dir }}
+      make install install-doc
+    when: git_installed|failed
+
+  - name: Delete temporary directory for git build
+    shell: rm -rf {{ git_temp_dir.stdout }}
+    when: git_installed|failed
+
+- hosts: Ubuntu
+  remote_user: vagrant
+  gather_facts: no
+  tasks:
+  - name: Install git
+    sudo: yes
+    apt: pkg=git state=present update_cache=yes cache_valid_time=3600
+
+
+- hosts: localhost
+  remote_user: vagrant
+  gather_facts: no
   
   tasks:
 
-  - include: tasks/install-ssh-files.yml
-  - include: tasks/add-github-to-known-hosts.yml
- 
-  - name: Install git
-    sudo: yes
-    apt: >
-      pkg=git
-      state=present 
-      update_cache=yes 
-      cache_valid_time=3600
-
   - name: Clone home repo
     git: >
-      repo="{{ home_repo }}"
+      repo={{ home_repo }}
       dest=/home/{{ ansible_ssh_user }}/.git
       bare=yes
       update=no
@@ -30,10 +104,10 @@
 
   - name: convert bare repo to normal
     shell: >
-      chdir="/home/{{ ansible_ssh_user }}"
+      chdir=/home/{{ ansible_ssh_user }}
       git config core.bare false
       && git config core.logallrefupdates true
-      && git remote remove origin
+      && git remote rm origin
       && git remote add origin {{ home_repo }} 
       && git fetch --all
       && git branch -u origin/master
