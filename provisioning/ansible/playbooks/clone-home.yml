@@ -29,6 +29,7 @@
     sudo: yes
     yum: name={{ item }}
     with_items:
+    # Code
     - perl-ExtUtils-MakeMaker.x86_64
     - gettext-devel
     - expat-devel
@@ -38,6 +39,7 @@
     - openssl-devel
     - gcc-c++
     - make
+    # Documentation
     - asciidoc
     - xmlto.x86_64
     when: git_installed|failed
