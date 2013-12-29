@@ -13,9 +13,9 @@
 - hosts: CentOS
   remote_user: vagrant
   gather_facts: no
+  sudo: yes
   tasks:
   - name: Install helpful packages
-    sudo: yes
     yum: name={{ item }} enablerepo=epel
     with_items:
     - vim-enhanced
@@ -27,6 +27,16 @@
     - clang-doc
     - clang-analyzer
     - libnotify
+  - name: Install docker
+    yum: name=docker-io enablerepo=epel
+    notify:
+    - start docker daemon
+    - start docker on boot
+  handlers:
+  - name: start docker daemon
+    service: name=docker state=started
+  - name: start docker on boot
+    shell: chkconfig docker on
 
 - hosts: Ubuntu
   remote_user: vagrant
