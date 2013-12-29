@@ -4,10 +4,50 @@
   hosts: localhost
   remote_user: vagrant
   tasks:
-  - include: tasks/kernel-modules.yml
-  - include: tasks/install-docker.yml
-  - include: tasks/developer-tools.yml
+  - group_by: key={{ ansible_distribution }}
   - include: tasks/data-skeleton-dir.yml
   - include: tasks/git-config.yml
   - include: tasks/vim-plugins.yml
   - include: tasks/dircolors.yml
+
+- hosts: CentOS
+  remote_user: vagrant
+  gather_facts: no
+  tasks:
+  - name: Install helpful packages
+    sudo: yes
+    yum: name={{ item }} enablerepo=epel
+    with_items:
+    - vim-enhanced
+    - tmux
+    - htop
+    - socat
+    - ack
+    - clang
+    - clang-doc
+    - clang-analyzer
+    - libnotify
+
+- hosts: Ubuntu
+  remote_user: vagrant
+  gather_facts: no
+  tasks:
+  - include: tasks/kernel-modules.yml
+  - include: tasks/install-docker.yml
+  - name: Install helpful packages
+    sudo: yes
+    apt: pkg={{ item }} update_cache=yes cache_valid_time=3600
+    with_items:
+    - git
+    - tmux
+    - htop
+    - socat
+    - vim
+    - vim-scripts
+    - ack-grep
+    - clang-3.4
+    - clang-3.4-doc
+    - libclang1-3.4
+    - clang-format-3.4
+    - cpp11-migrate-3.4
+    - libnotify-bin
