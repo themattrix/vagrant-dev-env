@@ -1,0 +1,106 @@
+---
+
+- hosts: CentOS
+  remote_user: vagrant
+  gather_facts: no
+  vars:
+    libevent_version: "2.0.21-stable"
+    libevent_package: "libevent-{{ libevent_version }}.tar.gz"
+    libevent_src_url: "https://github.com/downloads/libevent/libevent/{{ libevent_package }}"
+    libevent_src_dir: "libevent-{{ libevent_version }}"
+    tmux_version: "1.8"
+    tmux_package: "tmux-{{ tmux_version }}.tar.gz"
+    tmux_src_url: "http://sourceforge.net/projects/tmux/files/tmux/tmux-{{ tmux_version }}/{{ tmux_package }}/download"
+    tmux_src_dir: "tmux-{{ tmux_version }}"
+
+  tasks:
+
+  - name: See if tmux is installed
+    shell: which tmux
+    register: tmux_installed
+    ignore_errors: yes
+
+  - name: Install build tools
+    sudo: yes
+    yum: name={{ item }}
+    with_items:
+    - gcc
+    - kernel-devel
+    - make
+    - ncurses-devel
+    when: tmux_installed|failed
+
+  - name: Create temporary directory for libevent build
+    shell: mktemp -d
+    register: libevent_temp_dir
+    when: tmux_installed|failed
+
+  - name: Download libevent source
+    get_url: url={{ libevent_src_url }} dest={{ libevent_temp_dir.stdout }}/{{ libevent_package }}
+    when: tmux_installed|failed
+
+  - name: Extract libevent source
+    shell: >
+      chdir={{ libevent_temp_dir.stdout }}
+      tar xzf {{ libevent_package }}
+    when: tmux_installed|failed
+
+  - name: Make libevent
+    shell: >
+      chdir={{ libevent_temp_dir.stdout }}/{{ libevent_src_dir }}
+      ./configure --prefix=/usr/local
+      && make
+    when: tmux_installed|failed
+
+  - name: Install libevent
+    sudo: yes
+    shell: >
+      chdir={{ libevent_temp_dir.stdout }}/{{ libevent_src_dir }}
+      make install
+    when: tmux_installed|failed
+
+  - name: Delete temporary directory for libevent build
+    shell: rm -rf {{ libevent_temp_dir.stdout }}
+    when: tmux_installed|failed
+
+  - name: Create temporary directory for tmux build
+    shell: mktemp -d
+    register: tmux_temp_dir
+    when: tmux_installed|failed
+
+  - name: Download tmux source
+    get_url: url={{ tmux_src_url }} dest={{ tmux_temp_dir.stdout }}/{{ tmux_package }}
+    when: tmux_installed|failed
+
+  - name: Extract tmux source
+    shell: >
+      chdir={{ tmux_temp_dir.stdout }}
+      tar xzf {{ tmux_package }}
+    when: tmux_installed|failed
+
+  - name: Make tmux
+    shell: >
+      chdir={{ tmux_temp_dir.stdout }}/{{ tmux_src_dir }}
+      LDFLAGS="-L/usr/local/lib -Wl,-rpath=/usr/local/lib" ./configure --prefix=/usr/local
+      && make
+    when: tmux_installed|failed
+
+  - name: Install tmux
+    sudo: yes
+    shell: >
+      chdir={{ tmux_temp_dir.stdout }}/{{ tmux_src_dir }}
+      make install
+    when: tmux_installed|failed
+
+  - name: Delete temporary directory for tmux build
+    shell: rm -rf {{ tmux_temp_dir.stdout }}
+    when: tmux_installed|failed
+
+
+- hosts: Ubuntu
+  remote_user: vagrant
+  gather_facts: no
+  tasks:
+  - name: Install tmux
+    sudo: yes
+    apt: pkg=tmux state=present update_cache=yes cache_valid_time=3600

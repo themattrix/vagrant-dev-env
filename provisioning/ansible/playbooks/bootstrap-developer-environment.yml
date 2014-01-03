@@ -10,6 +10,8 @@
   - include: tasks/vim-plugins.yml
   - include: tasks/dircolors.yml
 
+- include: install-tmux.yml
+
 - hosts: CentOS
   remote_user: vagrant
   gather_facts: no
@@ -19,7 +21,6 @@
     yum: name={{ item }} enablerepo=epel
     with_items:
     - vim-enhanced
-    - tmux
     - htop
     - socat
     - ack
