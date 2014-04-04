@@ -3,7 +3,7 @@
 > Status
 >
 > - Ubuntu: **Operational**
-> - CentOS: *Not yet ready for use.*
+> - CentOS: **Operational**
 
 #### Initial Setup
 
