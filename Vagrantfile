@@ -5,10 +5,10 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    # Define an Ubuntu Saucy (13.04) x64 machine
+    # Define an Ubuntu Trusty (14.04) x64 machine
     config.vm.define "ubuntu" do |ubuntu|
-        ubuntu.vm.box     = "saucy64"
-        ubuntu.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/saucy/current/saucy-server-cloudimg-amd64-vagrant-disk1.box"
+        ubuntu.vm.box     = "trusty64"
+        ubuntu.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
     end
 
     # Define a CentOS 6.4 x64 machine
