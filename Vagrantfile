@@ -17,9 +17,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         centos.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210.box"
     end
 
-    # Initially with Puppet for the sole purpose of installing and running Ansible on the VM.
+    # Use Puppet to bootstrap Ansible on the VM.
     config.vm.provision "puppet" do |puppet|
         puppet.manifests_path = "provisioning/puppet/manifests"
-        puppet.manifest_file  = "run_ansible.pp"
+        puppet.manifest_file  = "bootstrap_ansible.pp"
+    end
+
+    # Use Ansible to provision the rest of the system.
+    config.vm.provision "shell" do |script|
+        script.inline = "PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ansible-playbook /vagrant/provisioning/ansible/playbook.yml"
+        script.privileged = false
+        script.keep_color = true
     end
 end

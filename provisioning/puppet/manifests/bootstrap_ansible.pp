@@ -41,14 +41,3 @@ file { '/etc/ansible/hosts':
   mode    => '0644',
   require => Package['ansible'],
 }
-
-exec { 'bootstrap-ansible':
-  user        => 'vagrant',
-  environment => ['HOME=/home/vagrant', 'USER=vagrant'],
-  command     => 'ansible-playbook /vagrant/provisioning/ansible/playbook.yml',
-  logoutput   => true,
-  timeout     => 0,
-  require     => [
-    File['/etc/ansible/hosts'],
-  ]
-}
