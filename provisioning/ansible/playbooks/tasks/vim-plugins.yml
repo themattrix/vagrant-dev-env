@@ -43,3 +43,6 @@
 
   # C/C++ tools
   - https://github.com/Rip-Rip/clang_complete
+
+  # Docker tools
+  - https://github.com/ekalinin/Dockerfile.vim

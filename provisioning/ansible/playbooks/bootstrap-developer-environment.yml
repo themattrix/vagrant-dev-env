@@ -9,6 +9,9 @@
   - include: tasks/git-config.yml
   - include: tasks/vim-plugins.yml
   - include: tasks/dircolors.yml
+  - name: Add user to docker group
+    sudo: yes
+    user: name={{ ansible_ssh_user }} groups=docker append=yes
 
 - include: install-tmux.yml
 
